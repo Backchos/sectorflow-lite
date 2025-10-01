@@ -1,4 +1,4 @@
-# Railway 배포용 requirements.txt
+# Requirements for Railway deployment
 # Core packages
 pandas==2.2.2
 numpy==1.26.4

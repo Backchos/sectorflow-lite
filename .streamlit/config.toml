@@ -1,0 +1,10 @@
+[server]
+headless = false
+runOnSave = true
+browser.gatherUsageStats = false
+
+[browser]
+serverAddress = "localhost"
+serverPort = 8501
+
+

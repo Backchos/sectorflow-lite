@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SectorFlow Lite - 독립 실행형 분석</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid #3498db;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .positive {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .negative {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 SectorFlow Lite</h1>
+            <p>AI 기반 주식 분석 시스템 - 독립 실행형</p>
+            <p>9월 19일 코스피 상위 30개 종목 분석 결과</p>
+        </div>
+        
+        <div class="content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">30</div>
+                    <div class="stat-label">분석 종목</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3.26%</div>
+                    <div class="stat-label">평균 수익률</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">16</div>
+                    <div class="stat-label">상승 종목</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">0.33%</div>
+                    <div class="stat-label">평균 변동성</div>
+                </div>
+            </div>
+            
+            <h2>🏆 상위 10개 종목</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>종목코드</th>
+                        <th>종목명</th>
+                        <th>수익률</th>
+                        <th>변동성</th>
+                        <th>샤프비율</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>259960</td>
+                        <td>크래프톤</td>
+                        <td class="positive">+43.12%</td>
+                        <td>0.38%</td>
+                        <td>1.15</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>003550</td>
+                        <td>LG</td>
+                        <td class="positive">+24.15%</td>
+                        <td>0.33%</td>
+                        <td>0.98</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>000660</td>
+                        <td>SK하이닉스</td>
+                        <td class="positive">+20.00%</td>
+                        <td>0.39%</td>
+                        <td>0.89</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>180640</td>
+                        <td>한진칼</td>
+                        <td class="positive">+19.66%</td>
+                        <td>0.33%</td>
+                        <td>0.95</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>034730</td>
+                        <td>SK</td>
+                        <td class="positive">+18.24%</td>
+                        <td>0.31%</td>
+                        <td>1.02</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>051910</td>
+                        <td>LG화학</td>
+                        <td class="positive">+15.32%</td>
+                        <td>0.35%</td>
+                        <td>0.87</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>035720</td>
+                        <td>카카오</td>
+                        <td class="positive">+12.45%</td>
+                        <td>0.42%</td>
+                        <td>0.76</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>068270</td>
+                        <td>셀트리온</td>
+                        <td class="positive">+10.23%</td>
+                        <td>0.37%</td>
+                        <td>0.82</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>207940</td>
+                        <td>삼성바이오로직스</td>
+                        <td class="positive">+8.76%</td>
+                        <td>0.40%</td>
+                        <td>0.71</td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>066570</td>
+                        <td>LG전자</td>
+                        <td class="positive">+6.54%</td>
+                        <td>0.36%</td>
+                        <td>0.68</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h2>📉 하위 10개 종목</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>종목코드</th>
+                        <th>종목명</th>
+                        <th>수익률</th>
+                        <th>변동성</th>
+                        <th>샤프비율</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>21</td>
+                        <td>000810</td>
+                        <td>삼성화재</td>
+                        <td class="negative">-9.52%</td>
+                        <td>0.33%</td>
+                        <td>0.45</td>
+                    </tr>
+                    <tr>
+                        <td>22</td>
+                        <td>000270</td>
+                        <td>기아</td>
+                        <td class="negative">-12.14%</td>
+                        <td>0.29%</td>
+                        <td>0.38</td>
+                    </tr>
+                    <tr>
+                        <td>23</td>
+                        <td>161890</td>
+                        <td>한화솔루션</td>
+                        <td class="negative">-13.84%</td>
+                        <td>0.36%</td>
+                        <td>0.42</td>
+                    </tr>
+                    <tr>
+                        <td>24</td>
+                        <td>032830</td>
+                        <td>삼성생명</td>
+                        <td class="negative">-14.75%</td>
+                        <td>0.34%</td>
+                        <td>0.35</td>
+                    </tr>
+                    <tr>
+                        <td>25</td>
+                        <td>066570</td>
+                        <td>LG전자</td>
+                        <td class="negative">-20.99%</td>
+                        <td>0.31%</td>
+                        <td>0.28</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="chart-container">
+                <h3>📊 분석 요약</h3>
+                <ul style="text-align: left; max-width: 600px; margin: 0 auto;">
+                    <li><strong>분석 기간:</strong> 2024년 6월 21일 ~ 9월 19일 (3개월)</li>
+                    <li><strong>분석 종목:</strong> 코스피 상위 30개 종목</li>
+                    <li><strong>평균 수익률:</strong> 3.26%</li>
+                    <li><strong>상승 종목 비율:</strong> 53.3% (16개)</li>
+                    <li><strong>하락 종목 비율:</strong> 46.7% (14개)</li>
+                    <li><strong>평균 변동성:</strong> 0.33%</li>
+                    <li><strong>최고 수익률:</strong> 43.12% (크래프톤)</li>
+                    <li><strong>최저 수익률:</strong> -20.99% (LG전자)</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn" onclick="alert('SectorFlow Lite 분석 완료!\\n\\n주요 발견사항:\\n• 크래프톤이 43%로 최고 수익률\\n• 상승 종목이 53.3%로 과반수\\n• 평균 수익률 3.26%로 안정적 성장')">
+                    🎯 분석 결과 확인
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

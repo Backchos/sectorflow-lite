@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SectorFlow Lite - 웹 분석 도구</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid #3498db;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .positive {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .negative {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .chart-container {
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .chart-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        
+        .symbol-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .symbol-input input {
+            flex: 1;
+        }
+        
+        .symbol-list {
+            margin-top: 10px;
+            padding: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .symbol-item {
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        
+        .symbol-item:hover {
+            background: #bdc3c7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📈 SectorFlow Lite</h1>
+            <p>AI 기반 주식 분석 시스템 - 웹 버전</p>
+            <p>브라우저에서 직접 종목을 선택하고 분석하세요!</p>
+        </div>
+        
+        <div class="content">
+            <div class="form-section">
+                <h2>🔍 분석 설정</h2>
+                
+                <div class="form-group">
+                    <label>분석 유형 선택:</label>
+                    <select id="analysisType">
+                        <option value="individual">개별 종목 분석</option>
+                        <option value="kospi30">KOSPI 상위 30개 전체</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="symbolGroup">
+                    <label>종목코드 입력 (쉼표로 구분):</label>
+                    <div class="symbol-input">
+                        <input type="text" id="symbolInput" placeholder="예: 005930,000660,035720">
+                        <button type="button" class="btn" onclick="loadSymbols()">종목 목록 불러오기</button>
+                    </div>
+                    <div class="symbol-list" id="symbolList" style="display: none;"></div>
+                </div>
+                
+                <div style="text-align: center;">
+                    <button class="btn" onclick="startAnalysis()" id="analyzeBtn">🚀 분석 시작</button>
+                    <button class="btn" onclick="clearResults()" style="background: #e74c3c;">🗑️ 결과 지우기</button>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading" style="display: none;">
+                <h3>⏳ 분석 중입니다...</h3>
+                <p>잠시만 기다려주세요.</p>
+            </div>
+            
+            <div class="results" id="results">
+                <div class="stats-grid" id="statsGrid"></div>
+                
+                <div class="chart-container" id="chartContainer"></div>
+                
+                <h2>📊 종목별 분석 결과</h2>
+                <table class="table" id="resultsTable"></table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let availableSymbols = [];
+        
+        // 페이지 로드 시 사용 가능한 종목 목록 가져오기
+        window.onload = function() {
+            loadAvailableSymbols();
+        };
+        
+        // 분석 유형 변경 시 UI 업데이트
+        document.getElementById('analysisType').addEventListener('change', function() {
+            const symbolGroup = document.getElementById('symbolGroup');
+            if (this.value === 'kospi30') {
+                symbolGroup.style.display = 'none';
+            } else {
+                symbolGroup.style.display = 'block';
+            }
+        });
+        
+        // 사용 가능한 종목 목록 로드
+        function loadAvailableSymbols() {
+            fetch('/symbols')
+                .then(response => response.json())
+                .then(data => {
+                    availableSymbols = data.symbols;
+                    console.log('Available symbols:', availableSymbols);
+                })
+                .catch(error => {
+                    console.error('Error loading symbols:', error);
+                });
+        }
+        
+        // 종목 목록 표시
+        function loadSymbols() {
+            const symbolList = document.getElementById('symbolList');
+            symbolList.innerHTML = '';
+            
+            availableSymbols.forEach(symbol => {
+                const item = document.createElement('div');
+                item.className = 'symbol-item';
+                item.textContent = symbol;
+                item.onclick = function() {
+                    addSymbol(symbol);
+                };
+                symbolList.appendChild(item);
+            });
+            
+            symbolList.style.display = 'block';
+        }
+        
+        // 종목 추가
+        function addSymbol(symbol) {
+            const input = document.getElementById('symbolInput');
+            const currentValue = input.value.trim();
+            
+            if (currentValue === '') {
+                input.value = symbol;
+            } else {
+                input.value = currentValue + ',' + symbol;
+            }
+        }
+        
+        // 분석 시작
+        function startAnalysis() {
+            const analysisType = document.getElementById('analysisType').value;
+            const symbolInput = document.getElementById('symbolInput').value.trim();
+            
+            let symbols = [];
+            
+            if (analysisType === 'individual') {
+                if (symbolInput === '') {
+                    alert('종목코드를 입력해주세요.');
+                    return;
+                }
+                symbols = symbolInput.split(',').map(s => s.trim());
+            }
+            
+            // 로딩 표시
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('analyzeBtn').disabled = true;
+            
+            // 분석 요청
+            fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    type: analysisType,
+                    symbols: symbols
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || '분석 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+                showError('네트워크 오류가 발생했습니다: ' + error.message);
+            });
+        }
+        
+        // 결과 표시
+        function displayResults(data) {
+            const results = data.results;
+            const stats = data.stats;
+            
+            // 통계 표시
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total_stocks}</div>
+                    <div class="stat-label">분석 종목</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${(stats.avg_return * 100).toFixed(2)}%</div>
+                    <div class="stat-label">평균 수익률</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.positive_count}</div>
+                    <div class="stat-label">상승 종목</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${(stats.avg_volatility * 100).toFixed(2)}%</div>
+                    <div class="stat-label">평균 변동성</div>
+                </div>
+            `;
+            
+            // 차트 표시
+            const chartContainer = document.getElementById('chartContainer');
+            chartContainer.innerHTML = `
+                <h3>📈 주가 추이</h3>
+                <img src="data:image/png;base64,${data.chart}" alt="주가 차트">
+            `;
+            
+            // 결과 테이블 표시
+            const resultsTable = document.getElementById('resultsTable');
+            let tableHTML = `
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>종목코드</th>
+                        <th>수익률</th>
+                        <th>변동성</th>
+                        <th>샤프비율</th>
+                        <th>최대낙폭</th>
+                    </tr>
+                </thead>
+                <tbody>
+            `;
+            
+            results.forEach((result, index) => {
+                const returnClass = result.total_return > 0 ? 'positive' : 'negative';
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${result.symbol}</td>
+                        <td class="${returnClass}">${(result.total_return * 100).toFixed(2)}%</td>
+                        <td>${(result.volatility * 100).toFixed(2)}%</td>
+                        <td>${result.sharpe_ratio.toFixed(2)}</td>
+                        <td>${(result.max_drawdown * 100).toFixed(2)}%</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody>';
+            resultsTable.innerHTML = tableHTML;
+            
+            // 결과 표시
+            document.getElementById('results').style.display = 'block';
+        }
+        
+        // 오류 표시
+        function showError(message) {
+            const results = document.getElementById('results');
+            results.innerHTML = `<div class="error">❌ ${message}</div>`;
+            results.style.display = 'block';
+        }
+        
+        // 결과 지우기
+        function clearResults() {
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('symbolInput').value = '';
+        }
+    </script>
+</body>
+</html>
+

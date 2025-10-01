@@ -1,0 +1,82 @@
+backtest:
+  close_col: close
+  commission_rate: 0.003
+  initial_capital: 1000000
+  open_col: open
+  position_size: 1.0
+  signal_col: trading_signal
+data:
+  end_date: '2024-12-31'
+  interim_data_path: data/interim
+  lookback: 30
+  raw_data_path: data/raw
+  split:
+    test_start: '2024-11-01'
+    train_end: '2024-08-31'
+    valid_end: '2024-10-31'
+  start_date: '2024-01-01'
+  symbols:
+  - 005930
+  - '000660'
+  - '035420'
+  - 005380
+  - '006400'
+  tickers:
+  - 005930
+  - '000660'
+  - '035420'
+  - 005380
+  - '006400'
+features:
+  close_col: close
+  feature_cols:
+  - close
+  - volume
+  - trading_value
+  - returns
+  - ma_5
+  - ma_20
+  - volatility
+  rs_period: 20
+  trading_value_col: trading_value
+  zscore_window: 20
+logging:
+  artifacts_root: artifacts
+  file: logs/sectorflow.log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: INFO
+  report_root: reports
+  run_root: runs
+model:
+  batch_size: 32
+  dropout: 0.2
+  epochs: 100
+  hidden_size: 64
+  learning_rate: 0.001
+  num_layers: 2
+  sequence_length: 30
+  type: gru
+rules:
+  max_position_days: 5
+  min_volume_ratio: 1.0
+  rs_threshold: 1.0
+  stop_loss_ratio: 0.05
+  take_profit_ratio: 0.1
+  z20_threshold: 1.0
+trading:
+  fee_bps: 30
+  max_hold_days: 5
+  slippage_bps: 10
+  stop_loss_ratio: 0.05
+  take_profit_ratio: 0.1
+  threshold: 0.5
+train:
+  batch_size: 32
+  cv:
+    folds: 5
+    rolling: true
+    timeseries: true
+  early_stopping_patience: 15
+  epochs: 100
+  lr: 0.001
+  seed: 42

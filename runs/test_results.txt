@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "C:\Users\qortl\Sectorflow\sft_lite\run_tests.py", line 261, in <module>
+    success = main()
+  File "C:\Users\qortl\Sectorflow\sft_lite\run_tests.py", line 232, in main
+    print("\U0001f680 SectorFlow Lite - 테스트 실행")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\U0001f680' in position 0: illegal multibyte sequence

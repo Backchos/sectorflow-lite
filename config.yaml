@@ -1,0 +1,83 @@
+# SectorFlow Lite Configuration File
+
+# 데이터 설정
+data:
+  raw_data_path: "data/raw"
+  interim_data_path: "data/interim"
+  tickers: ["005930", "000660", "035420", "005380", "006400"]  # KRX 상위 종목
+  symbols: ["005930", "000660", "035420", "005380", "006400"]  # 호환성 유지
+  start_date: "2024-01-01"
+  end_date: "2024-12-31"
+  lookback: 30
+  split:
+    train_end: "2024-08-31"
+    valid_end: "2024-10-31"
+    test_start: "2024-11-01"
+
+# 피처 설정
+features:
+  zscore_window: 20
+  rs_period: 20
+  trading_value_col: "trading_value"
+  close_col: "close"
+  feature_cols: ["close", "volume", "trading_value", "returns", "ma_5", "ma_20", "volatility"]
+
+# 거래 설정
+trading:
+  fee_bps: 30  # 0.3% = 30 bps
+  slippage_bps: 10  # 0.1% = 10 bps
+  threshold: 0.5
+  max_hold_days: 5
+  stop_loss_ratio: 0.05
+  take_profit_ratio: 0.10
+
+# 룰 설정 (호환성 유지)
+rules:
+  z20_threshold: 1.0
+  rs_threshold: 1.0
+  min_volume_ratio: 1.0
+  max_position_days: 5
+  stop_loss_ratio: 0.05
+  take_profit_ratio: 0.10
+
+# 백테스트 설정
+backtest:
+  initial_capital: 1000000  # 100만원
+  commission_rate: 0.003    # 0.3% (호환성 유지)
+  position_size: 1.0
+  close_col: "close"
+  open_col: "open"
+  signal_col: "trading_signal"
+
+# 훈련 설정
+train:
+  lr: 0.001
+  batch_size: 32
+  epochs: 100
+  early_stopping_patience: 15
+  seed: 42
+  cv:
+    timeseries: true
+    folds: 5
+    rolling: true
+
+# 모델 설정
+model:
+  type: "gru"  # gru, lstm, attention, hybrid
+  sequence_length: 30
+  hidden_size: 64
+  num_layers: 2
+  dropout: 0.2
+  learning_rate: 0.001
+  batch_size: 32
+  epochs: 100
+
+# 로깅 설정
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/sectorflow.log"
+  run_root: "runs"
+  report_root: "reports"
+  artifacts_root: "artifacts"
+

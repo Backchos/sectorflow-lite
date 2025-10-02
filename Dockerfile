@@ -25,4 +25,4 @@ EXPOSE 8080
 ENV PORT=8080
 
 # Run the application
-CMD ["python", "-m", "streamlit", "run", "examples/app_streamlit.py", "--server.port=8080", "--server.address=0.0.0.0", "--server.headless=true"]
+CMD ["python", "-m", "streamlit", "run", "examples/app_streamlit.py", "--server.port=8080", "--server.address=0.0.0.0", "--server.headless=true", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]

@@ -1,13 +1,8 @@
 # Use Python 3.11 as base image
-FROM python:3.11-slim
+FROM python:3.11
 
 # Set working directory
 WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
 COPY requirements.txt .
@@ -25,4 +20,4 @@ EXPOSE 8080
 ENV PORT=8080
 
 # Run the application
-CMD ["python", "-m", "streamlit", "run", "examples/app_streamlit.py", "--server.port=8080", "--server.address=0.0.0.0", "--server.headless=true", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
+CMD ["python", "-m", "streamlit", "run", "examples/app_streamlit.py", "--server.port=8080", "--server.address=0.0.0.0", "--server.headless=true"]

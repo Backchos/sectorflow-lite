@@ -94,6 +94,15 @@ def index():
             </div>
             
             <div class="status">
+                <h2>🚀 대시보드 접속</h2>
+                <p><strong>Streamlit 대시보드</strong>에서 실제 분석 기능을 사용하세요!</p>
+                <a href="/dashboard" style="display: inline-block; background: #4CAF50; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 0;">
+                    📊 대시보드 열기
+                </a>
+                <p style="color: #81C784; font-size: 0.9em;">실시간 차트, AI 예측, 백테스팅 기능을 제공합니다.</p>
+            </div>
+            
+            <div class="status">
                 <h2>🔧 기술 스택</h2>
                 <p><strong>Backend:</strong> Python, Flask, Pandas, NumPy</p>
                 <p><strong>ML:</strong> Scikit-learn, XGBoost</p>
@@ -130,6 +139,130 @@ def api_status():
         'port': os.environ.get('PORT', 8080),
         'environment': 'production'
     }
+
+@app.route('/dashboard')
+def dashboard():
+    """Streamlit 대시보드 리다이렉트"""
+    return render_template_string('''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Streamlit Dashboard</title>
+        <meta charset="utf-8">
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 40px; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container { 
+                text-align: center;
+                background: rgba(255,255,255,0.1);
+                padding: 40px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+            }
+            h1 { color: #fff; margin-bottom: 30px; }
+            .loading { color: #81C784; margin: 20px 0; }
+            .info { color: #B0BEC5; margin: 10px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Streamlit 대시보드</h1>
+            <p class="loading">대시보드를 시작하는 중...</p>
+            <p class="info">잠시 후 자동으로 리다이렉트됩니다.</p>
+            <script>
+                // Streamlit 대시보드로 리다이렉트
+                setTimeout(function() {
+                    window.location.href = '/streamlit';
+                }, 2000);
+            </script>
+        </div>
+    </body>
+    </html>
+    ''')
+
+@app.route('/streamlit')
+def streamlit_dashboard():
+    """Streamlit 대시보드 실행"""
+    import subprocess
+    import threading
+    
+    def run_streamlit():
+        subprocess.run([
+            'python', '-m', 'streamlit', 'run', 
+            'dashboard.py',
+            '--server.port=8501',
+            '--server.address=0.0.0.0',
+            '--server.headless=true',
+            '--server.enableCORS=false',
+            '--server.enableXsrfProtection=false'
+        ])
+    
+    # Streamlit을 백그라운드에서 시작
+    streamlit_thread = threading.Thread(target=run_streamlit, daemon=True)
+    streamlit_thread.start()
+    
+    return render_template_string('''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Streamlit Dashboard</title>
+        <meta charset="utf-8">
+        <style>
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 40px; 
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .container { 
+                text-align: center;
+                background: rgba(255,255,255,0.1);
+                padding: 40px;
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+            }
+            h1 { color: #fff; margin-bottom: 30px; }
+            .loading { color: #81C784; margin: 20px 0; }
+            .info { color: #B0BEC5; margin: 10px 0; }
+            .link { 
+                display: inline-block; 
+                background: #4CAF50; 
+                color: white; 
+                padding: 15px 30px; 
+                text-decoration: none; 
+                border-radius: 8px; 
+                font-weight: bold; 
+                margin: 20px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 Streamlit 대시보드</h1>
+            <p class="loading">대시보드가 시작되었습니다!</p>
+            <p class="info">아래 버튼을 클릭하여 대시보드에 접속하세요.</p>
+            <a href="http://localhost:8501" target="_blank" class="link">
+                📊 대시보드 열기
+            </a>
+            <p class="info">새 창에서 대시보드가 열립니다.</p>
+        </div>
+    </body>
+    </html>
+    ''')
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
